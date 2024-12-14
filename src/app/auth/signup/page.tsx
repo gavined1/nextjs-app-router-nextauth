@@ -1,26 +1,26 @@
 import Link from 'next/link';
-import LoginForm from '@/components/LoginForm';
+import RegisterForm from '@/components/RegisterForm';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import AuthLayout from '@/components/AuthLayout';
 
-export default async function SignIn() {
+export default async function SignUp() {
   const session = await getServerSession();
 
   if (session) {
-    redirect('/tools');
+    redirect('/protected');
   }
 
   return (
-    <AuthLayout title="Sign in to your account">
-      <LoginForm />
+    <AuthLayout title="Create an account">
+      <RegisterForm />
       <p className="mt-8 text-center text-sm text-gray-400">
-        Not a member?{' '}
+        Already have an account?{' '}
         <Link
-          href="/auth/signup"
+          href="/auth/signin"
           className="font-semibold leading-6 text-indigo-400 hover:text-indigo-300"
         >
-          Create an account
+          Sign in
         </Link>
       </p>
     </AuthLayout>

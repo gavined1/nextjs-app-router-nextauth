@@ -1,9 +1,6 @@
 import { gql } from "graphql-request";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import DiscordProvider from "next-auth/providers/discord";
-import GoogleProvider from "next-auth/providers/google";
-import Auth0Provider from "next-auth/providers/auth0";
 
 type GraphQLVariables = {
   email: string;
@@ -12,7 +9,7 @@ type GraphQLVariables = {
 
 const hasuraQuery = async (variables: GraphQLVariables) => {
   const query = gql`
-    query users($email: String!, $password: bpchar!) {
+    query users($email: String!, $password: String!) {
       users(where: { email: { _eq: $email }, password: { _eq: $password } }) {
         id
         name
@@ -42,19 +39,6 @@ const hasuraQuery = async (variables: GraphQLVariables) => {
 
 const handler = NextAuth({
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    }),
-    DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID || "",
-      clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
-    }),
-    Auth0Provider({
-      clientId: process.env.AUTH0_CLIENT_ID || "",
-      clientSecret: process.env.AUTH0_CLIENT_SECRET || "",
-      issuer: process.env.AUTH0_ISSUER || "",
-    }),
     CredentialsProvider({
       id: "hasura-credentials",
       name: "Hasura Credentials",
@@ -70,12 +54,12 @@ const handler = NextAuth({
 
           const { data } = await hasuraQuery({
             email: credentials.email,
-            password: credentials.password,
+            password: credentials.password, // Note: In production, you should hash passwords
           });
 
           if (data.users.length > 0) {
             return {
-              id: data.users[0].id,
+              id: data.users[0].id.toString(),
               name: data.users[0].name,
               email: data.users[0].email,
               image: data.users[0].image,
@@ -111,9 +95,9 @@ const handler = NextAuth({
       return session;
     },
     async jwt({ token, user }) {
-      let newUser = { ...user } as any;
-      if (newUser.first_name && newUser.last_name)
-        token.name = `${newUser.first_name} ${newUser.last_name}`;
+      if (user) {
+        token.id = user.id;
+      }
       return token;
     },
   },

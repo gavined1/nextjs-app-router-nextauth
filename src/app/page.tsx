@@ -1,82 +1,54 @@
 import { getServerSession } from "next-auth";
-import Image from "next/image";
 import { redirect } from "next/navigation";
-
-import DiscordButton from "@/components/buttons/DiscordButton";
-import GoogleButton from "@/components/buttons/GoogleButton";
-import LoginButton from "@/components/buttons/LoginButton";
-import LogoutButton from "@/components/buttons/LogoutButton";
-import Auth0Button from "@/components/buttons/Auth0";
+import Hero from "@/components/Hero";
+import Features from "@/components/Features";
+import Pricing from "@/components/Pricing";
+import AnimationWrapper from "@/components/AnimationWrapper";
+import Navbar from "@/components/Navbar";
 
 export default async function Home() {
-  const session = (await getServerSession()) || {};
+  const session = await getServerSession();
 
-  if (Object.keys(session).length !== 0) {
-    redirect("/protected");
+  if (session) {
+    redirect("/dashboard");
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-around p-8 lg:p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-end font-mono text-sm lg:flex">
-        <div className="flex h-48 w-full items-center justify-between bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/images/icons/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-          <div className="px-2"></div>
-          {Object.keys(session).length === 0 ? (
-            <LoginButton />
-          ) : (
-            <LogoutButton />
-          )}
+    <AnimationWrapper>
+      <main className="relative min-h-screen bg-black overflow-hidden selection:bg-indigo-500/90 selection:text-white">
+        {/* Radial gradient for the container to give a faded look */}
+        <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+        
+        {/* Grid background for visual texture */}
+        <div className="absolute inset-0 bg-[url(/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+        
+        {/* Ambient light effect */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-10 blur-[100px]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-indigo-500 to-purple-500 opacity-10 blur-[100px]" />
         </div>
-      </div>
+        
+        {/* Navbar */}
+        <Navbar />
+        
+        {/* Content */}
+        <div className="relative z-10">
+          <Hero />
+          <div id="features">
+            <Features />
+          </div>
+          <div id="pricing">
+            <Pricing />
+          </div>
+        </div>
 
-      <h1 className="text-3xl font-bold text-center mb-8 lg:mb-0">
-        NextJs 14 App Router and Next Auth
-      </h1>
-
-      <div className="relative mb-8 flex place-items-center lg:my-0">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/images/icons/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-      <div className="grid grid-cols-1 gap-y-4 md:grid-cols-2 md:gap-x-6">
-        <GoogleButton />
-        <DiscordButton />
-        <Auth0Button />
-      </div>
-      <div>
-        <h2 className="text-2xl font-bold mb-3 mt-8 text-center lg:mt-0">
-          Changelog
-        </h2>
-        <ol className="font-mono">
-          <li>29-08-2024 - Add Auth0 Provider</li>
-          <li>08-06-2024 - Add login credential on Custom Login</li>
-          <li>04-05-2024 - Add database adapter on Custom Login</li>
-          <li>06-03-2024 - Update the Landing Page and Custom Login Page</li>
-          <li>06-03-2024 - Upgrade NPM Package to Latest Version</li>
-          <li>09-02-2024 - Upgrade to NextJs 14</li>
-          <li>26-05-2023 - NextJs 13 and NextAuth</li>
-        </ol>
-      </div>
-    </main>
+        {/* Floating elements in the background */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <div className="absolute -left-1/4 top-1/4 h-96 w-96 animate-blob rounded-full bg-purple-500/30 mix-blend-multiply blur-xl" />
+          <div className="animation-delay-2000 absolute -right-1/4 top-1/2 h-96 w-96 animate-blob rounded-full bg-indigo-500/30 mix-blend-multiply blur-xl" />
+          <div className="animation-delay-4000 absolute -bottom-1/4 left-1/2 h-96 w-96 animate-blob rounded-full bg-blue-500/30 mix-blend-multiply blur-xl" />
+        </div>
+      </main>
+    </AnimationWrapper>
   );
 }
